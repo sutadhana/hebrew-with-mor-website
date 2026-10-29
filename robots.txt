@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.hebrew-with-mor.com/sitemap.xml
