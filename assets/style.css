@@ -33,9 +33,9 @@ b, strong, .bold { font-family: var(--bold); font-weight: 400; }
 .h2 { font-size: 56px; line-height: 1; }
 
 /* Header & footer */
-.site-header { position: relative; z-index: 20; height: 86px; background: var(--cream); border-bottom: 1px solid var(--sand);
+.site-header { position: relative; z-index: 20; height: 86px; background: var(--beige); border-bottom: 1px solid var(--sand);
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 39px; }
-.logo img { width: 99px; height: 41px; }
+.logo img { width: auto; height: 44px; }
 .site-header nav a { font-size: 16px; text-decoration: underline; text-underline-offset: 3px; }
 .site-footer { background: var(--mist); border-top: 1px solid var(--sand); min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding: 12px 39px; }
 .foot-note { font-size: 15px; }
@@ -165,11 +165,12 @@ p, summary, .lead { text-wrap: pretty; }
 
 /* Phones — follows the Wix mobile layout */
 @media (max-width: 760px) {
-  .site-header { height: 72px; padding: 0 16px 0 60px; grid-template-columns: auto 1fr; }
+  .site-header { height: 72px; padding: 0 16px; grid-template-columns: auto 1fr; }
   .site-header nav { display: none; }
   .site-footer { flex-direction: column; justify-content: center; padding: 18px 16px 70px; }
   .foot-note { font-size: 13px; text-align: center; }
-  .site-footer .logo img { width: 115px; height: auto; }
+  .site-footer .logo img { height: 40px; }
+  .site-header .logo img { height: 36px; }
   .h2 { font-size: 30px; line-height: 1.1; }
   .float-book { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 116px; height: 44px; font-size: 14px; line-height: 1.2; }
   .hero { padding: 58px 16px 34px; }

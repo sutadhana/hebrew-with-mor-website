@@ -13,10 +13,11 @@
 <meta property="og:image" content="https://www.hebrew-with-mor.com/assets/img/mor.webp">
 <meta name="google-site-verification" content="B3pV2Sk_h-aG2m7qCwHvKndFdT-osk3Hg5guzwNyJqk">
 <link rel="canonical" href="https://www.hebrew-with-mor.com/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/calibri.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="stylesheet" href="assets/style.css?v=5">
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18437991031"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -29,7 +30,7 @@
 <body>
 <a class="skip" href="#main">Skip to Main Content</a>
 <header class="site-header">
-  <a class="logo" href="./" aria-label="Hebrew With Mor home"><img src="assets/img/logo.webp" alt="Hebrew-With-Mor-logo" width="99" height="41"></a>
+  <a class="logo" href="./" aria-label="Hebrew With Mor home"><img src="assets/img/logo.svg" alt="Learn Hebrew with Mor" width="191" height="44"></a>
   <nav aria-label="Site"><a href="./" aria-current="page">Home</a></nav>
   <span></span>
 </header>
@@ -119,31 +120,31 @@
 <section class="faq">
   <h2 class="h2">Common Questions</h2>
   <div class="faq-box">
-    <details class="faq-item" open>
+    <details name="faq" class="faq-item" open>
       <summary><span>How long is a lesson, and how much does it cost?</span></summary>
       <div class="answer"><p>Each lesson is 50 minutes and costs $45. You can also purchase a package of 10 lessons and receive a 10% discount. The package is available in the <a href="#bookalesson">booking section</a> below.</p></div>
     </details>
-    <details class="faq-item">
+    <details name="faq" class="faq-item">
       <summary><span>What happens in a lesson?</span></summary>
       <div class="answer"><p>We’ll focus mainly on conversation and communication, while incorporating grammar, vocabulary, reading, and corrections according to your needs.</p></div>
     </details>
-    <details class="faq-item">
+    <details name="faq" class="faq-item">
       <summary><span>Do you teach reading and grammar?</span></summary>
       <div class="answer"><p>Yes, we’ll build a solid foundation in grammar and vocabulary while helping you develop reading comprehension using modern Hebrew texts.</p></div>
     </details>
-    <details class="faq-item">
+    <details name="faq" class="faq-item">
       <summary><span>Can lessons focus mainly on conversation?</span></summary>
       <div class="answer"><p>Absolutely. Conversation is an important part of my approach, and we can put a strong emphasis on speaking, listening and practical Hebrew for everyday life.</p></div>
     </details>
-    <details class="faq-item">
+    <details name="faq" class="faq-item">
       <summary><span>Can I learn Hebrew for living in Israel?</span></summary>
       <div class="answer"><p>Definitely. I help students prepare for life in Israel by focusing on practical communication, cultural nuances, and the specific Hebrew needed for daily living.</p></div>
     </details>
-    <details class="faq-item">
+    <details name="faq" class="faq-item">
       <summary><span>Whom do you teach?</span></summary>
       <div class="answer"><p>I teach adults of all ages and levels.</p></div>
     </details>
-    <details class="faq-item">
+    <details name="faq" class="faq-item">
       <summary><span>Can you teach me to read Biblical Hebrew?</span></summary>
       <div class="answer"><p>Yes. I can help you learn how to read Biblical Hebrew, even if you are starting from scratch. However, my main focus is Modern Hebrew, and I don’t specialize in Biblical Hebrew, prayer texts, or interpreting the meaning of prayers.</p></div>
     </details>
@@ -253,13 +254,18 @@
 </main>
 
 <footer class="site-footer">
-  <a class="logo" href="./" aria-label="Hebrew With Mor home"><img src="assets/img/logo.webp" alt="Hebrew-With-Mor-logo" width="99" height="41"></a>
+  <a class="logo" href="./" aria-label="Hebrew With Mor home"><img src="assets/img/logo.svg" alt="Learn Hebrew with Mor" width="191" height="44"></a>
   <p class="foot-note">© 2026 Hebrew With Mor · <a href="https://practice.hebrew-with-mor.com/" target="_blank" rel="noopener">Daily Hebrew app</a></p>
 </footer>
 
 <a class="btn btn-pill float-book" href="#bookalesson">Book a lesson</a>
 
 <script>
+document.querySelectorAll('.faq-item').forEach(function (d) {
+  d.addEventListener('toggle', function () {
+    if (d.open) document.querySelectorAll('.faq-item[open]').forEach(function (o) { if (o !== d) o.open = false; });
+  });
+});
 document.getElementById('contact-form').addEventListener('submit', async function (e) {
   e.preventDefault();
   var form = this, msg = form.querySelector('.form-msg'), btn = form.querySelector('button');
