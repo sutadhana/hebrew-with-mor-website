@@ -245,3 +245,9 @@ p, summary, .lead { text-wrap: pretty; }
   .form label { margin-left: 2px; }
   .form .btn { height: 41px; }
 }
+
+/* About: first sentence on its own line */
+.about .text .lead-line { display: block; }
+/* Gentle fade-in while scrolling (added by script only, so content is visible without it) */
+.fade { opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease; }
+.fade.in { opacity: 1; transform: none; }
