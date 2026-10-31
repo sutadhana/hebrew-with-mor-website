@@ -17,7 +17,7 @@
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/calibri.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=8">
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18437991031"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -181,7 +181,7 @@
           <p class="desc">Hebrew lesson through Zoom</p>
         </div>
         <div class="meta"><span>50 min</span><span>$45</span></div>
-        <a class="btn" href="#bookalesson" data-booking="lesson">Book Now</a>
+        <button class="btn" type="button" data-pay="lesson">Book Now</button>
       </div>
       <div class="package" id="package">
         <h3>Commit to your Hebrew and save 10%</h3>
@@ -191,7 +191,7 @@
           <p class="price"><sup>$</sup>405</p>
           <p class="after">After purchasing, you can schedule your 10 lessons individually at times that suit you.</p>
           <p class="valid">Valid for 6 months</p>
-          <a class="btn" href="#bookalesson" data-booking="package">Buy Now</a>
+          <button class="btn" type="button" data-pay="package">Buy Now</button>
         </div>
       </div>
     </div>
@@ -260,6 +260,24 @@
 
 <a class="btn btn-pill float-book" href="#bookalesson">Book a lesson</a>
 
+<dialog class="pay" id="pay" aria-labelledby="pay-title">
+  <button class="pay-close" type="button" aria-label="Close">&times;</button>
+  <div class="pay-step">
+    <h3 id="pay-title"></h3>
+    <p class="pay-price"></p>
+    <p class="pay-note">Pay securely with a debit or credit card, no PayPal account needed, or with PayPal.</p>
+    <div class="pay-buttons" id="pay-buttons"><p class="pay-wait">Loading payment options…</p></div>
+    <p class="pay-msg" role="status" aria-live="polite"></p>
+  </div>
+  <div class="pay-done" hidden>
+    <h3>Thank you<span class="pay-first"></span>!</h3>
+    <p>Your payment was received.</p>
+    <p class="pay-next"></p>
+    <button class="btn pay-ok" type="button">Close</button>
+  </div>
+</dialog>
+
+<script src="assets/pay.js?v=1"></script>
 <script>
 document.querySelectorAll('.faq-item').forEach(function (d) {
   d.addEventListener('toggle', function () {
@@ -276,6 +294,50 @@ document.querySelectorAll('.faq-item').forEach(function (d) {
     if (el.closest('.faq-box, .book-box, .reviews-wrap, .form') && !el.matches('.faq-box, .book-box, .reviews-wrap, .form')) return;
     if (el.getBoundingClientRect().top < innerHeight) return;
     el.classList.add('fade'); io.observe(el);
+  });
+})();
+(function () {
+  var items = {
+    lesson: { title: 'Hebrew Lesson (50 min)', price: '45.00', desc: 'Hebrew lesson, 50 min (Zoom)',
+      next: 'I’ll email you within 24 hours to schedule your lesson.' },
+    package: { title: '10 Hebrew Lessons – 10% discount', price: '405.00', desc: '10 Hebrew lessons package (valid 6 months)',
+      next: 'I’ll email you within 24 hours to schedule your first lesson. The package is valid for 6 months.' }
+  };
+  var dlg = document.getElementById('pay'), box = document.getElementById('pay-buttons'),
+      step = dlg.querySelector('.pay-step'), done = dlg.querySelector('.pay-done'), msg = dlg.querySelector('.pay-msg'), cur;
+  function close() { dlg.close(); }
+  dlg.querySelector('.pay-close').addEventListener('click', close);
+  dlg.querySelector('.pay-ok').addEventListener('click', close);
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
+  document.querySelectorAll('[data-pay]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      cur = items[b.getAttribute('data-pay')];
+      dlg.querySelector('#pay-title').textContent = cur.title;
+      dlg.querySelector('.pay-price').textContent = '$' + cur.price.replace('.00', '');
+      step.hidden = false; done.hidden = true; msg.textContent = '';
+      box.innerHTML = '<p class="pay-wait">Loading payment options…</p>';
+      dlg.showModal();
+      if (window.gtag) gtag('event', 'begin_checkout', { value: +cur.price, currency: 'USD', items: [{ item_name: cur.title }] });
+      HM.render({
+        el: box,
+        description: cur.desc,
+        getAmount: function () { return cur.price; },
+        onPaid: function (p) {
+          dlg.querySelector('.pay-first').textContent = p.first ? ', ' + p.first : '';
+          dlg.querySelector('.pay-next').textContent = cur.next + (p.email ? ' (to ' + p.email + ')' : '');
+          step.hidden = true; done.hidden = false;
+          HM.notify('Hebrew With Mor: new payment – ' + cur.title, {
+            name: p.name, email: p.email, item: cur.title, amount: '$' + p.amount, paypal_order: p.id,
+            message: 'New payment on hebrew-with-mor.com. Email the student to schedule.'
+          });
+          if (window.gtag) gtag('event', 'purchase', { transaction_id: p.id, value: +cur.price, currency: 'USD' });
+        },
+        onError: function (m) { msg.textContent = m; }
+      }).catch(function () {
+        box.innerHTML = '<p class="pay-wait">Online payment isn’t available right now. Please <a href="#contact-form">send me a message</a> and I’ll help you book.</p>';
+        box.querySelector('a').addEventListener('click', close);
+      });
+    });
   });
 })();
 document.getElementById('contact-form').addEventListener('submit', async function (e) {

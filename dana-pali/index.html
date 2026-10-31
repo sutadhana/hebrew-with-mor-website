@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dāna | Hebrew With Mor</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://www.hebrew-with-mor.com/dana-pali">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+@font-face { font-family: "HM Calibri"; font-display: swap; src: url("../assets/fonts/calibri.woff2") format("woff2"); }
+@font-face { font-family: "HM Calibri Bold"; font-display: swap; src: url("../assets/fonts/calibri-bold.woff2") format("woff2"); }
+:root { --surface: #FEFAF5; --ink: #333333; --muted: #5F655C; --line: #D8D3C4; --accent: #5E6E58; --accent-hover: #45523F; --soft: #EEEFE9;
+  --font: "HM Calibri", Calibri, Carlito, "Segoe UI", sans-serif; --bold: "HM Calibri Bold", Calibri, Carlito, "Segoe UI", sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface); color: var(--ink); font-family: var(--font); font-size: 20px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+main { width: min(560px, 100% - 32px); margin: 0 auto; padding: 56px 0 60px; text-align: center; }
+h1 { font-family: var(--bold); font-weight: 400; font-size: 36px; line-height: 1.15; margin: 0; }
+.intro { margin: 18px 0 0; }
+.box { margin-top: 36px; border: 2px solid var(--line); border-radius: 22px; background: #fff; padding: 26px 22px 24px; }
+.box h2 { font-family: var(--bold); font-weight: 400; font-size: 22px; margin: 0 0 14px; }
+.amounts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.amounts button { font: 20px var(--font); color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 12px; height: 50px; cursor: pointer; }
+.amounts button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.other { display: flex; align-items: center; gap: 8px; margin-top: 12px; border: 1px solid #A9AFA5; border-radius: 12px; padding: 0 14px; background: #F7F7F4; }
+.other span { font-size: 20px; color: var(--muted); }
+.other input { flex: 1; min-width: 0; height: 48px; border: 0; background: transparent; font: 20px var(--font); color: var(--ink); outline: none; }
+.other:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+.note { font-size: 16px; color: var(--muted); margin: 16px 0 0; }
+#buttons { margin-top: 18px; min-height: 120px; }
+.wait { font-size: 17px; color: var(--muted); padding-top: 24px; margin: 0; }
+.msg { font-size: 16px; color: #9a3b2a; min-height: 1em; margin: 6px 0 0; }
+.done { margin-top: 36px; }
+.done h2 { font-family: var(--bold); font-weight: 400; font-size: 28px; margin: 0; }
+.done p { margin: 12px 0 0; }
+a { color: var(--accent); }
+.anumodana { font-style: italic; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Support Suta-Dhana</h1>
+  <p class="intro">If you find the Pali teaching, courses, and materials useful, and would like to support my work, you are welcome to make a donation.</p>
+  <p class="intro">Any amount is greatly appreciated. Thank you for your generosity and support.</p>
+
+  <section class="box" id="give">
+    <h2>Choose an amount (USD)</h2>
+    <div class="amounts" role="group" aria-label="Donation amount">
+      <button type="button" data-amt="10">$10</button>
+      <button type="button" data-amt="50" aria-pressed="true">$50</button>
+      <button type="button" data-amt="100">$100</button>
+    </div>
+    <label class="other"><span>$</span><input id="other" inputmode="decimal" placeholder="Other amount" aria-label="Other amount in US dollars"></label>
+    <p class="note">Donate with a debit or credit card, no PayPal account needed, or with PayPal.</p>
+    <div id="buttons"><p class="wait">Loading payment options…</p></div>
+    <p class="msg" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="done" hidden>
+    <h2>Thank you<span class="first"></span>!</h2>
+    <p>Your donation of <span class="amt"></span> was received.</p>
+    <p class="anumodana">Anumodāmi — I rejoice in your generosity.</p>
+  </section>
+</main>
+
+<script src="../assets/pay.js?v=1"></script>
+<script>
+(function () {
+  var chosen = '50', other = document.getElementById('other'), msg = document.querySelector('.msg');
+  var btns = document.querySelectorAll('[data-amt]');
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      chosen = b.getAttribute('data-amt'); other.value = ''; msg.textContent = '';
+      btns.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    });
+  });
+  other.addEventListener('input', function () {
+    btns.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+    chosen = null; msg.textContent = '';
+  });
+  function amount() {
+    var v = chosen || other.value.replace(/[^0-9.]/g, '');
+    var n = Math.round(parseFloat(v) * 100) / 100;
+    if (!(n >= 1) || n > 10000) { msg.textContent = 'Please choose or enter an amount (at least $1).'; return null; }
+    return n.toFixed(2);
+  }
+  HM.render({
+    el: document.getElementById('buttons'),
+    description: 'Dāna – Suta-Dhana Pali teaching',
+    getAmount: amount,
+    onPaid: function (p) {
+      document.getElementById('give').hidden = true;
+      var d = document.querySelector('.done'); d.hidden = false;
+      d.querySelector('.first').textContent = p.first ? ', ' + p.first : '';
+      d.querySelector('.amt').textContent = '$' + p.amount.replace('.00', '');
+      HM.notify('Suta-Dhana: new dāna – $' + p.amount, { name: p.name, email: p.email, amount: '$' + p.amount, paypal_order: p.id });
+    },
+    onError: function (m) { msg.textContent = m; }
+  }).catch(function () {
+    document.getElementById('buttons').innerHTML = '<p class="wait">Card donations aren’t available right now. You can still give through <a href="https://paypal.me/sutadhana" target="_blank" rel="noopener">PayPal</a>.</p>';
+  });
+})();
+</script>
+</body>
+</html>

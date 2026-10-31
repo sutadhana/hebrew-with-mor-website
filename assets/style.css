@@ -163,6 +163,21 @@ p, summary, .lead { text-wrap: pretty; }
 .form-msg { text-align: center; font-size: 16px; margin-top: 10px; min-height: 1em; }
 .honey { display: none; }
 
+/* Payment dialog */
+.pay { width: min(460px, 100% - 32px); border: 4px solid var(--sage); border-radius: 30px; background: var(--cream); color: var(--ink);
+  padding: 34px 28px 28px; text-align: center; box-shadow: var(--shadow); }
+.pay::backdrop { background: rgba(45, 48, 46, .45); }
+.pay-close { position: absolute; top: 8px; right: 12px; width: 40px; height: 40px; background: none; border: 0; font-size: 34px; line-height: 1; color: var(--ink); cursor: pointer; }
+.pay h3 { font-family: var(--bold); font-size: 26px; line-height: 1.2; padding: 0 24px; }
+.pay-close:focus:not(:focus-visible) { outline: none; }
+.pay-price { font-size: 38px; margin-top: 8px; }
+.pay-note { font-size: 17px; margin-top: 10px; line-height: 1.4; }
+.pay-buttons { margin-top: 22px; min-height: 120px; }
+.pay-wait { font-size: 17px; line-height: 1.4; color: rgba(45, 48, 46, .8); padding-top: 30px; }
+.pay-msg { font-size: 16px; margin-top: 8px; min-height: 1em; color: #9a3b2a; }
+.pay-done p { font-size: 19px; line-height: 1.4; margin-top: 12px; }
+.pay-ok { width: 200px; height: 44px; border-radius: 100px; margin-top: 24px; }
+
 /* Phones — follows the Wix mobile layout */
 @media (max-width: 760px) {
   .site-header { height: 72px; padding: 0 16px; grid-template-columns: auto 1fr; }
