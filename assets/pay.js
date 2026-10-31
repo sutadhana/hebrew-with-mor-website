@@ -4,7 +4,7 @@
    SETUP: paste the LIVE Client ID from your PayPal Business account below
    (developer.paypal.com → Apps & Credentials → Live → your app → Client ID).
    The Client ID is public by design; never put the Secret here. */
-var HM_PAYPAL_CLIENT_ID = '';
+var HM_PAYPAL_CLIENT_ID = 'AZSqotWXh6a0ATWHtY_7oaVEDx2R3dNETw83_TPIpnGJSPAW19NnAQab1lVDVM5cLMCzXzjSccZzgtKX';
 
 /* Sends Mor an email (via Web3Forms) after every successful payment. */
 var HM_NOTIFY_KEY = '1c648618-77d0-4e7e-a533-900ff958d552';
