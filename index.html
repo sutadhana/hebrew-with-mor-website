@@ -314,6 +314,14 @@ var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min'
   dlg.querySelector('.pay-close').addEventListener('click', close);
   dlg.querySelector('.pay-ok:not(.pay-book)').addEventListener('click', close);
   dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
+  /* the booking calendar locks page scrolling while open; release it once the payment window closes */
+  function unlockScroll() {
+    [document.documentElement, document.body].forEach(function (el) {
+      el.style.removeProperty('overflow'); el.style.removeProperty('overflow-y'); el.style.removeProperty('position');
+    });
+    document.querySelectorAll('cal-modal-box').forEach(function (m) { m.remove(); });
+  }
+  dlg.addEventListener('close', unlockScroll);
 
   /* Cal.com embed */
   if (calOn) {
