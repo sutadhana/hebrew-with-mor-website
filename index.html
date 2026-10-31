@@ -299,7 +299,7 @@ document.querySelectorAll('.faq-item').forEach(function (d) {
 })();
 /* Booking calendar (Cal.com, opens on top of this page). Fill in the two booking
    links (the part after cal.com/, e.g. 'hebrew-with-mor/intro'). Empty = not connected yet. */
-var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min' };
+var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min', package: 'mor-ifrah-uucv4s/hebrew-lesson-package' };
 
 (function () {
   var items = {
@@ -358,9 +358,9 @@ var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min'
       getAmount: function () { return cur.price; },
       onPaid: function (p) {
         var next;
-        if (key === 'lesson' && afterBooking) next = 'Your lesson is booked. You’ll get an email with the lesson details and the Zoom link.';
+        if (key === 'lesson' && afterBooking) next = 'Your lesson is booked. You’ll get an email with the lesson details and the Zoom link. Lessons can be rescheduled or cancelled up to 24 hours in advance.';
         else if (key === 'lesson') next = 'I’ll email you within 24 hours to schedule your lesson.';
-        else if (calOn) next = 'You can now book your lessons. Use “Book a lesson” each time; the package is valid for 6 months.';
+        else if (calOn) next = 'Book your first lesson now. For the next ones, save this page: hebrew-with-mor.com/package. The package is valid for 6 months, and lessons can be rescheduled up to 24 hours in advance.';
         else next = 'I’ll email you within 24 hours to schedule your first lesson. The package is valid for 6 months.';
         dlg.querySelector('.pay-first').textContent = p.first ? ', ' + p.first : '';
         dlg.querySelector('.pay-next').textContent = next;
@@ -369,7 +369,7 @@ var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min'
         HM.notify('Hebrew With Mor: new payment – ' + cur.title, {
           name: p.name, email: p.email, item: cur.title, amount: '$' + p.amount, paypal_order: p.id,
           message: afterBooking ? 'Paid for a lesson booked in Cal.com (check the booking, and confirm it if it is pending).'
-                                : 'New payment on hebrew-with-mor.com.' + (key === 'package' ? ' Package: confirm each lesson they book.' : ' Email the student to schedule.')
+                                : 'New payment on hebrew-with-mor.com.' + (key === 'package' ? ' Package: they book at hebrew-with-mor.com/package (confirm each one).' : ' Email the student to schedule.')
         });
         if (window.gtag) gtag('event', 'purchase', { transaction_id: p.id, value: +cur.price, currency: 'USD' });
       },
@@ -379,7 +379,7 @@ var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min'
       box.querySelector('a').addEventListener('click', close);
     });
   }
-  bookBtn.addEventListener('click', function () { close(); booked = 'package'; Cal("modal", { calLink: HM_CAL.lesson, config: { layout: "month_view" } }); });
+  bookBtn.addEventListener('click', function () { close(); booked = 'package'; Cal("modal", { calLink: HM_CAL.package, config: { layout: "month_view" } }); });
 
   document.querySelectorAll('[data-pay]').forEach(function (b) {
     b.addEventListener('click', function () {
