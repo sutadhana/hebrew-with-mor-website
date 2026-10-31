@@ -273,11 +273,12 @@
     <h3>Thank you<span class="pay-first"></span>!</h3>
     <p>Your payment was received.</p>
     <p class="pay-next"></p>
+    <button class="btn pay-ok pay-book" type="button" hidden>Book a lesson</button>
     <button class="btn pay-ok" type="button">Close</button>
   </div>
 </dialog>
 
-<script src="assets/pay.js?v=2"></script>
+<script src="assets/pay.js?v=3"></script>
 <script>
 document.querySelectorAll('.faq-item').forEach(function (d) {
   d.addEventListener('toggle', function () {
@@ -296,47 +297,93 @@ document.querySelectorAll('.faq-item').forEach(function (d) {
     el.classList.add('fade'); io.observe(el);
   });
 })();
+/* Booking calendar (Cal.com, opens on top of this page). Fill in the two booking
+   links (the part after cal.com/, e.g. 'hebrew-with-mor/intro'). Empty = not connected yet. */
+var HM_CAL = { intro: '', lesson: '' };
+
 (function () {
   var items = {
-    lesson: { title: 'Hebrew Lesson (50 min)', price: '45.00', desc: 'Hebrew lesson, 50 min (Zoom)',
-      next: 'I’ll email you within 24 hours to schedule your lesson.' },
-    package: { title: '10 Hebrew Lessons – 10% discount', price: '405.00', desc: '10 Hebrew lessons package (valid 6 months)',
-      next: 'I’ll email you within 24 hours to schedule your first lesson. The package is valid for 6 months.' }
+    lesson: { title: 'Hebrew Lesson (50 min)', price: '45.00', desc: 'Hebrew lesson, 50 min (Zoom)' },
+    package: { title: '10 Hebrew Lessons – 10% discount', price: '405.00', desc: '10 Hebrew lessons package (valid 6 months)' }
   };
+  var calOn = !!(HM_CAL.intro && HM_CAL.lesson);
   var dlg = document.getElementById('pay'), box = document.getElementById('pay-buttons'),
-      step = dlg.querySelector('.pay-step'), done = dlg.querySelector('.pay-done'), msg = dlg.querySelector('.pay-msg'), cur;
+      step = dlg.querySelector('.pay-step'), done = dlg.querySelector('.pay-done'), msg = dlg.querySelector('.pay-msg'),
+      bookBtn = dlg.querySelector('.pay-book'), cur, booked;
   function close() { dlg.close(); }
   dlg.querySelector('.pay-close').addEventListener('click', close);
-  dlg.querySelector('.pay-ok').addEventListener('click', close);
+  dlg.querySelector('.pay-ok:not(.pay-book)').addEventListener('click', close);
   dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
+
+  /* Cal.com embed */
+  if (calOn) {
+    (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+    Cal("init", { origin: "https://cal.com" });
+    Cal("ui", { theme: "light", cssVarsPerTheme: { light: { "cal-brand": "#7D8C7A" } }, hideEventTypeDetails: false, layout: "month_view" });
+    var onBooked = function () {
+      if (booked !== 'lesson') return;
+      booked = null;
+      setTimeout(function () {
+        try { document.querySelectorAll('cal-modal-box').forEach(function (m) { m.remove(); }); } catch (x) {}
+        openPay('lesson', true);
+      }, 1200);
+    };
+    Cal("on", { action: "bookingSuccessfulV2", callback: onBooked });
+    Cal("on", { action: "bookingSuccessful", callback: onBooked });
+  }
+  function openCal(which) {
+    booked = which;
+    Cal("modal", { calLink: HM_CAL[which], config: { layout: "month_view" } });
+  }
+
+  function openPay(key, afterBooking) {
+    cur = items[key]; cur.key = key; cur.afterBooking = afterBooking;
+    dlg.querySelector('#pay-title').textContent = afterBooking ? 'Last step: pay to confirm your lesson' : cur.title;
+    dlg.querySelector('.pay-price').textContent = '$' + cur.price.replace('.00', '');
+    step.hidden = false; done.hidden = true; msg.textContent = ''; bookBtn.hidden = true;
+    box.innerHTML = '<p class="pay-wait">Loading payment options…</p>';
+    if (!dlg.open) dlg.showModal();
+    if (window.gtag) gtag('event', 'begin_checkout', { value: +cur.price, currency: 'USD', items: [{ item_name: cur.title }] });
+    HM.render({
+      el: box,
+      description: cur.desc,
+      getAmount: function () { return cur.price; },
+      onPaid: function (p) {
+        var next;
+        if (key === 'lesson' && afterBooking) next = 'Your lesson will be confirmed shortly, and you’ll get an email with the Zoom link.';
+        else if (key === 'lesson') next = 'I’ll email you within 24 hours to schedule your lesson.';
+        else if (calOn) next = 'You can now book your lessons. Use “Book a lesson” each time; the package is valid for 6 months.';
+        else next = 'I’ll email you within 24 hours to schedule your first lesson. The package is valid for 6 months.';
+        dlg.querySelector('.pay-first').textContent = p.first ? ', ' + p.first : '';
+        dlg.querySelector('.pay-next').textContent = next;
+        bookBtn.hidden = !(key === 'package' && calOn);
+        step.hidden = true; done.hidden = false;
+        HM.notify('Hebrew With Mor: new payment – ' + cur.title, {
+          name: p.name, email: p.email, item: cur.title, amount: '$' + p.amount, paypal_order: p.id,
+          message: afterBooking ? 'Paid for a lesson booked in Cal.com: confirm the pending booking.'
+                                : 'New payment on hebrew-with-mor.com.' + (key === 'package' ? ' Package: confirm each lesson they book.' : ' Email the student to schedule.')
+        });
+        if (window.gtag) gtag('event', 'purchase', { transaction_id: p.id, value: +cur.price, currency: 'USD' });
+      },
+      onError: function (m) { msg.textContent = m; }
+    }).catch(function () {
+      box.innerHTML = '<p class="pay-wait">Online payment isn’t available right now. Please <a href="#contact-form">send me a message</a> and I’ll help you book.</p>';
+      box.querySelector('a').addEventListener('click', close);
+    });
+  }
+  bookBtn.addEventListener('click', function () { close(); booked = 'package'; Cal("modal", { calLink: HM_CAL.lesson, config: { layout: "month_view" } }); });
+
   document.querySelectorAll('[data-pay]').forEach(function (b) {
     b.addEventListener('click', function () {
-      cur = items[b.getAttribute('data-pay')];
-      dlg.querySelector('#pay-title').textContent = cur.title;
-      dlg.querySelector('.pay-price').textContent = '$' + cur.price.replace('.00', '');
-      step.hidden = false; done.hidden = true; msg.textContent = '';
-      box.innerHTML = '<p class="pay-wait">Loading payment options…</p>';
-      dlg.showModal();
-      if (window.gtag) gtag('event', 'begin_checkout', { value: +cur.price, currency: 'USD', items: [{ item_name: cur.title }] });
-      HM.render({
-        el: box,
-        description: cur.desc,
-        getAmount: function () { return cur.price; },
-        onPaid: function (p) {
-          dlg.querySelector('.pay-first').textContent = p.first ? ', ' + p.first : '';
-          dlg.querySelector('.pay-next').textContent = cur.next + (p.email ? ' (to ' + p.email + ')' : '');
-          step.hidden = true; done.hidden = false;
-          HM.notify('Hebrew With Mor: new payment – ' + cur.title, {
-            name: p.name, email: p.email, item: cur.title, amount: '$' + p.amount, paypal_order: p.id,
-            message: 'New payment on hebrew-with-mor.com. Email the student to schedule.'
-          });
-          if (window.gtag) gtag('event', 'purchase', { transaction_id: p.id, value: +cur.price, currency: 'USD' });
-        },
-        onError: function (m) { msg.textContent = m; }
-      }).catch(function () {
-        box.innerHTML = '<p class="pay-wait">Online payment isn’t available right now. Please <a href="#contact-form">send me a message</a> and I’ll help you book.</p>';
-        box.querySelector('a').addEventListener('click', close);
-      });
+      var key = b.getAttribute('data-pay');
+      if (key === 'lesson' && calOn) openCal('lesson'); else openPay(key, false);
+    });
+  });
+  document.querySelectorAll('[data-booking="intro"]').forEach(function (b) {
+    b.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (calOn) openCal('intro');
+      else { var f = document.getElementById('contact-form'); f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.querySelector('#f-subject').value = 'Free introductory meeting'; }
     });
   });
 })();
