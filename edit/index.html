@@ -413,7 +413,7 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
     } else if (m === 'version') {
       $('banner-title').textContent = 'EARLIER VERSION — ' + viewing.label.toUpperCase();
       $('banner-sub').textContent = 'Just looking. Your live site hasn’t changed.';
-      add('<button class="btn outline big">Back to now</button>').onclick = function () { viewing = null; refreshMode(); show(currentPath); };
+      add('<button class="btn outline big">Cancel</button>').onclick = function () { viewing = null; refreshMode(); show(currentPath); };
       var r = add('<button class="btn light big" id="restore-btn">Bring this version back</button>');
       r.onclick = restoreVersion;
       if (viewing.restorable === false) { r.disabled = true; r.title = 'This version can’t be brought back here'; }
@@ -472,12 +472,15 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
         setMode('version');
         if (d.content) frame.srcdoc = previewHtml(path, d.content);
         else { frame.srcdoc = '<p style="font:20px sans-serif;padding:40px;color:#555">' + (d.note || 'Not available.') + '</p>'; }
-      }).catch(function (err) { bubble('note', err.message); });
+      }).catch(function (err) {
+        viewing = null; refreshMode(); show(path);
+        bubble('note', 'I couldn’t open that version: ' + err.message);
+      });
       return;
     }
     var html = pending[path] ? pending[path].content : (goingLive && goingLive[path]);
     if (html) frame.srcdoc = previewHtml(path, html);
-    else { frame.removeAttribute('srcdoc'); frame.src = urlOf(path); }
+    else { frame.removeAttribute('srcdoc'); frame.src = urlOf(path) + '?fresh=' + Date.now(); }
   }
   $('frame').addEventListener('load', function () {
     var w = this.contentWindow;
@@ -572,7 +575,7 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
     d.innerHTML = esc(text) + (img ? '<img src="' + img + '" alt="">' : '');
     $('log').appendChild(d);
     $('log').scrollTop = $('log').scrollHeight;
-    if (kind !== 'me' && pocket.hidden === false && kind === 'bot') openChat();
+    if (kind !== 'me' && pocket.hidden === false) openChat();
     return d;
   }
   function typing() { var d = bubble('bot', ''); d.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>'; return d; }
