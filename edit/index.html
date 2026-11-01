@@ -114,9 +114,6 @@ button { cursor: pointer; }
 .mor-arm { transform-origin: 13.4% 66.4%; }
 .waving .mor-arm { animation: wave 1.9s ease-in-out 1; }
 @keyframes wave { 0%,100%{transform:rotate(0)} 14%{transform:rotate(-9deg)} 30%{transform:rotate(8deg)} 46%{transform:rotate(-9deg)} 62%{transform:rotate(7deg)} 78%{transform:rotate(-4deg)} }
-.mor-note { position: absolute; left: 59.5%; width: 12%; height: 9%; top: 76%; background: #fff; border-radius: 18%; border: 1px solid #8a9686; display: flex; gap: 9%; align-items: center; justify-content: center; opacity: 0; transition: top .45s .25s cubic-bezier(.2,1.4,.4,1), opacity .2s .25s; }
-.mor-note i { width: 14%; aspect-ratio: 1; border-radius: 50%; background: #7D8C7A; }
-.pocket .mor-note { top: 65.5%; opacity: 1; }
 
 /* ---------- History ---------- */
 dialog.hist { border: 0; border-radius: 16px; padding: 22px; width: min(480px, calc(100% - 24px)); background: var(--cream); color: var(--ink); }
@@ -214,7 +211,6 @@ window.MorAvatar = {
   html: function () {
     return '<div class="mor">' +
       '<img class="mor-img" src="avatar/mor-base.webp" alt="" draggable="false">' +
-      '<span class="mor-note"><i></i><i></i><i></i></span>' +
       '<img class="mor-img" src="avatar/mor-pocket.webp" alt="" draggable="false">' +
       '<img class="mor-img mor-arm" src="avatar/mor-hand.webp" alt="" draggable="false">' +
       '</div>';
