@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /edit/
 Sitemap: https://www.hebrew-with-mor.com/sitemap.xml
