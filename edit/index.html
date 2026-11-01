@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="editor-api" content="https://site-editor.resight-it.workers.dev">
-<meta name="avatar-style" content="chibi">
 <title>Edit your website</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <style>
@@ -68,9 +67,10 @@ button { cursor: pointer; }
 .chat.folding { transition: transform .38s cubic-bezier(.5,0,.75,.3), opacity .38s; transform: scale(.08); opacity: 0; }
 .chat.opening { animation: openUp .38s cubic-bezier(.2,1.2,.4,1); }
 @keyframes openUp { from { transform: scale(.1); opacity: 0; } }
-.chat-head { display: flex; align-items: center; gap: 6px; padding: 8px 8px 8px 96px; border-bottom: 1px solid var(--sand); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; min-height: 52px; position: relative; }
+.chat-head { display: flex; align-items: center; gap: 6px; padding: 8px 8px 8px 128px; border-bottom: 1px solid var(--sand); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; min-height: 52px; position: relative; }
 .chat-head:active { cursor: grabbing; }
-.chat-head .who { position: absolute; left: 6px; bottom: -2px; width: 86px; pointer-events: none; }
+.chat-head .who { position: absolute; left: 2px; bottom: 0; width: 124px; height: 104px; overflow: hidden; pointer-events: none; }
+.chat-head .who .mor { width: 124px; }
 .chat-head .title { flex: 1; line-height: 1.15; font-size: 18px; }
 .chat-head .title small { display: block; font-size: 13px; color: var(--muted); }
 .hbtn { width: 36px; height: 36px; border-radius: 10px; border: 0; background: transparent; display: grid; place-items: center; color: var(--ink); font-size: 15px; }
@@ -101,21 +101,22 @@ button { cursor: pointer; }
 .grip::after { content: ""; position: absolute; right: 6px; bottom: 6px; width: 10px; height: 10px; border-right: 2px solid #b9b3a3; border-bottom: 2px solid #b9b3a3; border-bottom-right-radius: 3px; }
 
 /* ---------- Minimized: Mor with the chat in his pocket ---------- */
-.pocket { position: fixed; z-index: 10; width: 96px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; filter: drop-shadow(0 6px 14px rgba(45,48,46,.25)); }
+.pocket { position: fixed; z-index: 10; width: 112px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; filter: drop-shadow(0 6px 14px rgba(45,48,46,.25)); }
 .pocket .tap { position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%); white-space: nowrap; font-size: 14px; background: var(--ink); color: #fff; border-radius: 999px; padding: 4px 12px; }
 .pocket.pop { animation: pocketPop .45s cubic-bezier(.2,1.5,.4,1); }
 @keyframes pocketPop { from { transform: scale(.6); } }
 .pocket.nudge { animation: nudge 3s 1.5s infinite; }
 @keyframes nudge { 0%,82%,100% { transform: translateY(0); } 88% { transform: translateY(-7px); } 94% { transform: translateY(0); } }
 
-/* avatar animation parts */
-.mor .mor-arm { transform-box: view-box; transform-origin: 36px 150px; }
-.waving .mor-arm { animation: wave 1.6s ease-in-out 1; }
-@keyframes wave { 0%,100%{transform:rotate(0)} 15%{transform:rotate(-16deg)} 30%{transform:rotate(12deg)} 45%{transform:rotate(-14deg)} 60%{transform:rotate(10deg)} 75%{transform:rotate(-6deg)} }
-.mor .mor-blink { transform-box: view-box; animation: eyeblink 4.5s infinite; }
-@keyframes eyeblink { 0%,94%,100%{transform:scaleY(1)} 96%{transform:scaleY(.1)} }
-.mor .mor-note { transform-box: view-box; transform: translateY(16px); opacity: 0; transition: transform .4s .2s, opacity .2s .2s; }
-.pocket .mor .mor-note { transform: translateY(0); opacity: 1; }
+/* avatar: Mor (layered picture: body, waving hand, pocket) */
+.mor { position: relative; width: 100%; aspect-ratio: 560 / 598; }
+.mor-img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-user-drag: none; user-select: none; }
+.mor-arm { transform-origin: 13.4% 66.4%; }
+.waving .mor-arm { animation: wave 1.9s ease-in-out 1; }
+@keyframes wave { 0%,100%{transform:rotate(0)} 14%{transform:rotate(-9deg)} 30%{transform:rotate(8deg)} 46%{transform:rotate(-9deg)} 62%{transform:rotate(7deg)} 78%{transform:rotate(-4deg)} }
+.mor-note { position: absolute; left: 59.5%; width: 12%; height: 9%; top: 76%; background: #fff; border-radius: 18%; border: 1px solid #8a9686; display: flex; gap: 9%; align-items: center; justify-content: center; opacity: 0; transition: top .45s .25s cubic-bezier(.2,1.4,.4,1), opacity .2s .25s; }
+.mor-note i { width: 14%; aspect-ratio: 1; border-radius: 50%; background: #7D8C7A; }
+.pocket .mor-note { top: 65.5%; opacity: 1; }
 
 /* ---------- History ---------- */
 dialog.hist { border: 0; border-radius: 16px; padding: 22px; width: min(480px, calc(100% - 24px)); background: var(--cream); color: var(--ink); }
@@ -141,8 +142,9 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
   .banner .acts .btn { padding: 8px 12px; font-size: 15px; }
   .banner .acts .btn.big { padding: 9px 14px; font-size: 16px; }
   .banner select { max-width: 104px; padding: 8px 8px; font-size: 15px; }
-  .chat-head .who { width: 74px; }
-  .chat-head { padding-left: 82px; }
+  .chat-head .who { width: 104px; height: 90px; }
+  .chat-head .who .mor { width: 104px; }
+  .chat-head { padding-left: 108px; }
 }
 </style>
 </head>
@@ -208,134 +210,21 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
 </dialog>
 
 <script>
-/* Mor avatar — three drawing styles of one small, friendly character.
-   MorAvatar.svg(style) → SVG markup. style: 'chibi' | 'line' | 'badge'
-   Parts with classes for animation: .mor-arm (waving forearm), .mor-note (paper peeking from pocket),
-   .mor-blink (eyes), .mor-pocket (pocket). */
-(function () {
-  var STYLES = {
-    chibi: {
-      skin: '#EDBF98', skinShade: '#D9A47C', hair: '#3A2F2A', tee: '#8C9A88', teeShade: '#76846F',
-      stroke: 'none', sw: 0, eye: '#2E221C', mouth: '#8A3B33', cheek: '#E58C7A', stubble: '#6A4F40',
-      headR: 46, headY: 74, eyeR: [5.2, 6.4], cheeks: true, bg: null
-    },
-    line: {
-      skin: '#F5DFC8', skinShade: '#E9C9A9', hair: '#4A403A', tee: '#E3E8DC', teeShade: '#C9D2C2',
-      stroke: '#55634F', sw: 2.2, eye: '#33403A', mouth: '#9C4E43', cheek: '#E9A58F', stubble: '#7F6B5C',
-      headR: 43, headY: 75, eyeR: [4.2, 5.2], cheeks: true, bg: null
-    },
-    badge: {
-      skin: '#E6B48D', skinShade: '#CF9A72', hair: '#352B26', tee: '#7D8C7A', teeShade: '#6A7867',
-      stroke: 'none', sw: 0, eye: '#2B201B', mouth: '#7E352E', cheek: '#D98470', stubble: '#5E4639',
-      headR: 37, headY: 80, eyeR: [3.4, 4], cheeks: false, bg: '#E8E3D5'
-    }
-  };
-
-  function svg(style, opts) {
-    var s = STYLES[style] || STYLES.chibi;
-    opts = opts || {};
-    var R = s.headR, cx = 80, cy = s.headY;
-    var st = s.stroke === 'none' ? '' : ' stroke="' + s.stroke + '" stroke-width="' + s.sw + '" stroke-linejoin="round" stroke-linecap="round"';
-    var thin = s.stroke === 'none' ? '' : ' stroke="' + s.stroke + '" stroke-width="' + (s.sw * 0.8) + '" stroke-linecap="round"';
-    var neckTop = cy + R * 0.78;
-    var eyeY = cy + R * 0.1, eyeDX = R * 0.36;
-    var mouthY = cy + R * 0.42;
-    var id = 'm' + Math.random().toString(36).slice(2, 7);
-
-    var parts = [];
-    parts.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 180" class="mor mor-' + style + '" aria-hidden="true">');
-    if (s.bg) {
-      parts.push('<defs><clipPath id="' + id + '"><circle cx="80" cy="96" r="76"/></clipPath></defs>');
-      parts.push('<circle cx="80" cy="96" r="76" fill="' + s.bg + '"/>');
-      parts.push('<g clip-path="url(#' + id + ')">');
-    }
-
-    // Waving arm (viewer's left): upper sleeve + forearm/hand group
-    parts.push('<g class="mor-arm">' +
-      '<path d="M30,150 Q22,136 22,114 L33,113 Q34,132 42,146 Z" fill="' + s.skin + '"' + st + '/>' +
-      '<g transform="translate(27,104)">' +
-      '<ellipse cx="0" cy="0" rx="9.5" ry="11" fill="' + s.skin + '"' + st + '/>' +
-      '<path d="M-7,-6 L-7,-15 M-2.5,-8 L-2.5,-18 M2,-8 L2,-17.5 M6.5,-6 L6.5,-14" stroke="' + s.skin + '" stroke-width="4.4" stroke-linecap="round"/>' +
-      (s.stroke === 'none' ? '' : '<path d="M-7,-6 L-7,-15 M-2.5,-8 L-2.5,-18 M2,-8 L2,-17.5 M6.5,-6 L6.5,-14" stroke="' + s.stroke + '" stroke-width="1" stroke-linecap="round" opacity=".55"/>') +
-      '<path d="M9,2 Q15,-2 14,-8" stroke="' + s.skin + '" stroke-width="4.4" stroke-linecap="round" fill="none"/>' +
-      '</g></g>');
-
-    parts.push('<path d="M38,134 Q25,144 25,163 Q36,168 47,164 Q47,148 57,137 Z" fill="' + s.tee + '"' + st + '/>');
-    // Body: t-shirt
-    parts.push('<path d="M22,182 C22,150 40,130 62,126 L98,126 C120,130 138,150 138,182 Z" fill="' + s.tee + '"' + st + '/>');
-    // Neck
-    parts.push('<path d="M70,' + (neckTop - 6) + ' L70,128 Q80,136 90,128 L90,' + (neckTop - 6) + ' Z" fill="' + s.skinShade + '"' + st + '/>');
-    // Collar
-    parts.push('<path d="M64,126 Q80,142 96,126" fill="none" stroke="' + s.teeShade + '" stroke-width="' + (s.sw ? s.sw : 3) + '" stroke-linecap="round"/>');
-    // Pocket (his left = viewer's right)
-    parts.push('<g class="mor-pocket"><rect x="99" y="148" width="22" height="20" rx="3" fill="' + s.teeShade + '"' + (st || '') + '/>' +
-      '<path d="M101,152.5 L119,152.5" stroke="' + s.tee + '" stroke-width="1.3" stroke-dasharray="2 2"/></g>');
-    // Little note peeking from the pocket (shown when minimized)
-    parts.push('<g class="mor-note"><rect x="103" y="138" width="15" height="14" rx="3" fill="#fff" stroke="' + (s.stroke === 'none' ? s.teeShade : s.stroke) + '" stroke-width="1.2"/>' +
-      '<circle cx="107" cy="145" r="1.3" fill="' + s.tee + '"/><circle cx="110.5" cy="145" r="1.3" fill="' + s.tee + '"/><circle cx="114" cy="145" r="1.3" fill="' + s.tee + '"/></g>');
-    // Re-draw pocket front over note
-    parts.push('<rect class="mor-pocket-front" x="99" y="152" width="22" height="16" rx="3" fill="' + s.teeShade + '"' + st + '/>');
-
-    // Ears
-    parts.push('<ellipse cx="' + (cx - R * 0.98) + '" cy="' + (cy + R * 0.12) + '" rx="' + R * 0.17 + '" ry="' + R * 0.24 + '" fill="' + s.skinShade + '"' + st + '/>');
-    parts.push('<ellipse cx="' + (cx + R * 0.98) + '" cy="' + (cy + R * 0.12) + '" rx="' + R * 0.17 + '" ry="' + R * 0.24 + '" fill="' + s.skinShade + '"' + st + '/>');
-    // Head (slightly taller than wide, rounder chin)
-    var hw = R * 0.95, top = cy - R, bot = cy + R * 0.98;
-    parts.push('<path d="M' + (cx - hw) + ',' + cy + ' C' + (cx - hw) + ',' + (top - 2) + ' ' + (cx + hw) + ',' + (top - 2) + ' ' + (cx + hw) + ',' + cy +
-      ' C' + (cx + hw) + ',' + (bot - R * 0.25) + ' ' + (cx + R * 0.45) + ',' + bot + ' ' + cx + ',' + bot +
-      ' C' + (cx - R * 0.45) + ',' + bot + ' ' + (cx - hw) + ',' + (bot - R * 0.25) + ' ' + (cx - hw) + ',' + cy + ' Z" fill="' + s.skin + '"' + st + '/>');
-    // Stubble along jaw and chin (soft)
-    parts.push('<path d="M' + (cx - hw + 2) + ',' + (cy + R * 0.18) + ' C' + (cx - hw + 4) + ',' + (bot - R * 0.15) + ' ' + (cx - R * 0.35) + ',' + (bot + 1) + ' ' + cx + ',' + (bot + 1) +
-      ' C' + (cx + R * 0.35) + ',' + (bot + 1) + ' ' + (cx + hw - 4) + ',' + (bot - R * 0.15) + ' ' + (cx + hw - 2) + ',' + (cy + R * 0.18) +
-      ' C' + (cx + hw - 10) + ',' + (cy + R * 0.62) + ' ' + (cx + R * 0.3) + ',' + (cy + R * 0.66) + ' ' + cx + ',' + (cy + R * 0.66) +
-      ' C' + (cx - R * 0.3) + ',' + (cy + R * 0.66) + ' ' + (cx - hw + 10) + ',' + (cy + R * 0.62) + ' ' + (cx - hw + 2) + ',' + (cy + R * 0.18) + ' Z" fill="' + s.stubble + '" opacity=".22"/>');
-    // Mustache shadow
-    parts.push('<path d="M' + (cx - R * 0.26) + ',' + (mouthY - R * 0.1) + ' Q' + cx + ',' + (mouthY - R * 0.2) + ' ' + (cx + R * 0.26) + ',' + (mouthY - R * 0.1) + '" stroke="' + s.stubble + '" stroke-width="' + R * 0.06 + '" stroke-linecap="round" fill="none" opacity=".16"/>');
-    // Buzzed hair: cap with gently receding hairline
-    var hy = top + R * 0.42;
-    parts.push('<path d="M' + (cx - hw - 0.5) + ',' + (cy - R * 0.02) + ' C' + (cx - hw - 1) + ',' + (top - 3) + ' ' + (cx + hw + 1) + ',' + (top - 3) + ' ' + (cx + hw + 0.5) + ',' + (cy - R * 0.02) +
-      ' L' + (cx + hw - R * 0.06) + ',' + (cy - R * 0.08) +
-      ' C' + (cx + hw - R * 0.12) + ',' + (hy + R * 0.02) + ' ' + (cx + R * 0.42) + ',' + (hy + R * 0.12) + ' ' + (cx + R * 0.3) + ',' + (hy + R * 0.05) +
-      ' Q' + cx + ',' + (hy - R * 0.06) + ' ' + (cx - R * 0.3) + ',' + (hy + R * 0.05) +
-      ' C' + (cx - R * 0.42) + ',' + (hy + R * 0.12) + ' ' + (cx - hw + R * 0.12) + ',' + (hy + R * 0.02) + ' ' + (cx - hw + R * 0.06) + ',' + (cy - R * 0.08) + ' Z" fill="' + s.hair + '" opacity=".88"' + st + '/>');
-    // Brows
-    parts.push('<path d="M' + (cx - eyeDX - R * 0.14) + ',' + (eyeY - R * 0.24) + ' Q' + (cx - eyeDX) + ',' + (eyeY - R * 0.32) + ' ' + (cx - eyeDX + R * 0.15) + ',' + (eyeY - R * 0.25) +
-      ' M' + (cx + eyeDX - R * 0.15) + ',' + (eyeY - R * 0.25) + ' Q' + (cx + eyeDX) + ',' + (eyeY - R * 0.32) + ' ' + (cx + eyeDX + R * 0.14) + ',' + (eyeY - R * 0.24) +
-      '" stroke="' + s.hair + '" stroke-width="' + R * 0.07 + '" stroke-linecap="round" fill="none"/>');
-    // Eyes (smiling, with highlight)
-    parts.push('<g class="mor-blink" style="transform-origin:' + cx + 'px ' + eyeY + 'px">' +
-      '<ellipse cx="' + (cx - eyeDX) + '" cy="' + eyeY + '" rx="' + s.eyeR[0] + '" ry="' + s.eyeR[1] + '" fill="' + s.eye + '"/>' +
-      '<ellipse cx="' + (cx + eyeDX) + '" cy="' + eyeY + '" rx="' + s.eyeR[0] + '" ry="' + s.eyeR[1] + '" fill="' + s.eye + '"/>' +
-      '<circle cx="' + (cx - eyeDX + 1.4) + '" cy="' + (eyeY - 1.6) + '" r="' + s.eyeR[0] * 0.36 + '" fill="#fff"/>' +
-      '<circle cx="' + (cx + eyeDX + 1.4) + '" cy="' + (eyeY - 1.6) + '" r="' + s.eyeR[0] * 0.36 + '" fill="#fff"/></g>');
-    // Smile lines under eyes
-    parts.push('<path d="M' + (cx - eyeDX - 4) + ',' + (eyeY + s.eyeR[1] + 2.5) + ' q4,2.4 8,0 M' + (cx + eyeDX - 4) + ',' + (eyeY + s.eyeR[1] + 2.5) + ' q4,2.4 8,0" stroke="' + s.skinShade + '" stroke-width="1.2" fill="none" stroke-linecap="round"/>');
-    // Cheeks
-    if (s.cheeks) {
-      parts.push('<ellipse cx="' + (cx - eyeDX - R * 0.1) + '" cy="' + (eyeY + R * 0.3) + '" rx="' + R * 0.14 + '" ry="' + R * 0.08 + '" fill="' + s.cheek + '" opacity=".35"/>');
-      parts.push('<ellipse cx="' + (cx + eyeDX + R * 0.1) + '" cy="' + (eyeY + R * 0.3) + '" rx="' + R * 0.14 + '" ry="' + R * 0.08 + '" fill="' + s.cheek + '" opacity=".35"/>');
-    }
-    // Big open smile with teeth
-    var mw = R * 0.38;
-    parts.push('<path d="M' + (cx - mw) + ',' + mouthY + ' Q' + cx + ',' + (mouthY + R * 0.5) + ' ' + (cx + mw) + ',' + mouthY + ' Q' + cx + ',' + (mouthY + R * 0.06) + ' ' + (cx - mw) + ',' + mouthY + ' Z" fill="' + s.mouth + '"' + thin + '/>');
-    parts.push('<path d="M' + (cx - mw + 2) + ',' + (mouthY + 1) + ' Q' + cx + ',' + (mouthY + R * 0.16) + ' ' + (cx + mw - 2) + ',' + (mouthY + 1) + ' Q' + cx + ',' + (mouthY + R * 0.07) + ' ' + (cx - mw + 2) + ',' + (mouthY + 1) + ' Z" fill="#fff"/>');
-    // Nose
-    parts.push('<path d="M' + (cx - 1) + ',' + (eyeY + R * 0.12) + ' Q' + (cx + R * 0.08) + ',' + (eyeY + R * 0.3) + ' ' + (cx - R * 0.05) + ',' + (eyeY + R * 0.33) + '" stroke="' + s.skinShade + '" stroke-width="1.8" fill="none" stroke-linecap="round"/>');
-
-    if (s.bg) parts.push('</g><circle cx="80" cy="96" r="76" fill="none" stroke="' + s.teeShade + '" stroke-width="2"/>');
-    parts.push('</svg>');
-    return parts.join('');
+window.MorAvatar = {
+  html: function () {
+    return '<div class="mor">' +
+      '<img class="mor-img" src="avatar/mor-base.webp" alt="" draggable="false">' +
+      '<span class="mor-note"><i></i><i></i><i></i></span>' +
+      '<img class="mor-img" src="avatar/mor-pocket.webp" alt="" draggable="false">' +
+      '<img class="mor-img mor-arm" src="avatar/mor-hand.webp" alt="" draggable="false">' +
+      '</div>';
   }
-
-  window.MorAvatar = { svg: svg, styles: Object.keys(STYLES) };
-})();
-
+};
 </script>
 <script>
 (function () {
   var API = document.querySelector('meta[name="editor-api"]').content.replace(/\/$/, '');
-  var AVATAR = document.querySelector('meta[name="avatar-style"]').content;
-  var $ = function (id) { return document.getElementById(id); };
+    var $ = function (id) { return document.getElementById(id); };
   var ss = {
     get: function (k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch (e) { return null; } },
     set: function (k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -361,7 +250,7 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
   var lastNote = '';
 
   function save() { ss.set('ed-pending', pending); ss.set('ed-history', history); }
-  function face(el, extra) { el.innerHTML = MorAvatar.svg(AVATAR); if (extra) el.classList.add(extra); }
+  function face(el, extra) { el.innerHTML = MorAvatar.html(); if (extra) el.classList.add(extra); }
   function wave(el) { el.classList.remove('waving'); void el.offsetWidth; el.classList.add('waving'); }
   face($('signin-face'));
 
@@ -506,8 +395,8 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
   }
   function placePocket() {
     var vw = window.innerWidth, vh = window.innerHeight;
-    var p = ls.get('ed-pocket') || { x: box.x + box.w - 108, y: box.y + box.h - 130 };
-    p.x = Math.max(4, Math.min(p.x, vw - 100)); p.y = Math.max(70, Math.min(p.y, vh - 128));
+    var p = ls.get('ed-pocket') || { x: box.x + box.w - 124, y: box.y + box.h - 140 };
+    p.x = Math.max(4, Math.min(p.x, vw - 116)); p.y = Math.max(70, Math.min(p.y, vh - 140));
     pocket.style.left = p.x + 'px'; pocket.style.top = p.y + 'px';
     return p;
   }
@@ -542,7 +431,7 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
 
   function minimize() {
     var p = placePocket();
-    chat.style.transformOrigin = (p.x + 48 - box.x) + 'px ' + (p.y + 100 - box.y) + 'px';
+    chat.style.transformOrigin = (p.x + 73 - box.x) + 'px ' + (p.y + 88 - box.y) + 'px';
     chat.classList.add('folding');
     setTimeout(function () {
       chat.hidden = true; chat.classList.remove('folding');
