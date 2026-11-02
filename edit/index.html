@@ -169,7 +169,7 @@ dialog.hist .actions .btn { font-size: 16px; padding: 9px 18px; }
 <div class="chat" id="chat" hidden>
   <div class="chat-head" id="chat-head">
     <div class="who" id="head-face"></div>
-    <div class="title"><span id="bot-name">Mor</span><small>Drag me anywhere</small></div>
+    <div class="title"><span id="bot-name">Ask Mor</span><small>Your AI website assistant</small></div>
     <button class="hbtn" id="font-down" title="Smaller text" aria-label="Smaller text">A−</button>
     <button class="hbtn" id="font-up" title="Bigger text" aria-label="Bigger text" style="font-size:19px">A+</button>
     <button class="hbtn" id="minimize" title="Put the chat in my pocket" aria-label="Minimize">
@@ -234,7 +234,7 @@ window.MorAvatar = {
   var token = ss.get('ed-token');
   var pending = ss.get('ed-pending') || {};
   var history = ss.get('ed-history') || [];
-  var botName = ss.get('ed-bot') || 'Mor';
+  var botName = 'Ask Mor';
   var uploads = {};
   var attached = null;
   var pages = [];
@@ -271,7 +271,7 @@ window.MorAvatar = {
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Could not sign in.'); return d; }); })
       .then(function (d) {
         token = d.token; ss.set('ed-token', token);
-        botName = d.assistantName || 'Mor'; ss.set('ed-bot', botName);
+        ss.set('ed-bot', botName);
         start();
       })
       .catch(function (err) { $('signin-err').textContent = err.message === 'Failed to fetch' ? 'Can’t reach the editor right now.' : err.message; });
@@ -654,7 +654,7 @@ window.MorAvatar = {
       show(pages.indexOf('index.html') !== -1 ? 'index.html' : pages[0]);
     }).catch(function (err) { refreshMode(); bubble('note', err.message); });
     if (!$('log').children.length) {
-      bubble('bot', 'Hey, it’s ' + botName + '! 👋\nHow can I help you today?\n\nTell me what you’d like to change on your website.\nYou can type, or tap the mic and just say it.\nNothing goes live until you press Publish.');
+      bubble('bot', 'Hi! This is ' + botName + ', your AI website assistant. 👋\nHow can I help you today?\n\nTell me what you’d like to change on your website.\nYou can type, or tap the mic and just say it.\nNothing goes live until you press Publish.');
     }
     refreshMode();
   }
