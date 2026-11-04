@@ -21,7 +21,7 @@
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/calibri.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/style.css?v=8">
+<link rel="stylesheet" href="assets/style.css?v=9">
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18437991031"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -272,6 +272,11 @@
     <p class="pay-note">Pay securely with a debit or credit card, no PayPal account needed, or with PayPal.</p>
     <div class="pay-buttons" id="pay-buttons"><p class="pay-wait">Loading payment options…</p></div>
     <p class="pay-msg" role="status" aria-live="polite"></p>
+    <div class="pay-apple" hidden>
+      <p class="pay-or"><span>or</span></p>
+      <a class="apple-pay-link" href="#" target="_blank" rel="noopener" aria-label="Pay with Apple Pay"><span class="apple-pay-btn" aria-hidden="true"></span></a>
+      <p class="pay-apple-note">Opens a secure PayPal page<br>to pay with Apple Pay.<br>I’ll confirm by email<br>once your payment arrives.</p>
+    </div>
   </div>
   <div class="pay-done" hidden>
     <h3>Thank you<span class="pay-first"></span>!</h3>
@@ -307,8 +312,8 @@ var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min'
 
 (function () {
   var items = {
-    lesson: { title: 'Hebrew Lesson (50 min)', price: '45.00', desc: 'Hebrew lesson, 50 min (Zoom)' },
-    package: { title: '10 Hebrew Lessons – 10% discount', price: '405.00', desc: '10 Hebrew lessons package (valid 6 months)' }
+    lesson: { title: 'Hebrew Lesson (50 min)', price: '45.00', desc: 'Hebrew lesson, 50 min (Zoom)', applePay: 'https://www.paypal.com/ncp/payment/N5X32MY682LJL' },
+    package: { title: '10 Hebrew Lessons – 10% discount', price: '405.00', desc: '10 Hebrew lessons package (valid 6 months)', applePay: 'https://www.paypal.com/ncp/payment/CDSBHULAMT6GL' }
   };
   var calOn = !!(HM_CAL.intro && HM_CAL.lesson);
   var dlg = document.getElementById('pay'), box = document.getElementById('pay-buttons'),
@@ -348,12 +353,24 @@ var HM_CAL = { intro: 'mor-ifrah-uucv4s/15min', lesson: 'mor-ifrah-uucv4s/30min'
     Cal("modal", { calLink: HM_CAL[which], config: { layout: "month_view" } });
   }
 
+  /* Apple Pay: PayPal's on-page buttons don't offer it for this account, so Apple devices
+     also get a link to PayPal's hosted checkout page for the same item, which does. */
+  function hmApple() {
+    try {
+      var ua = navigator.userAgent;
+      return !!((window.ApplePaySession && ApplePaySession.canMakePayments && ApplePaySession.canMakePayments()) ||
+        /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1));
+    } catch (e) { return false; }
+  }
   function openPay(key, afterBooking) {
     cur = items[key]; cur.key = key; cur.afterBooking = afterBooking;
     dlg.querySelector('#pay-title').textContent = afterBooking ? 'Last step: pay to confirm your lesson' : cur.title;
     dlg.querySelector('.pay-price').textContent = '$' + cur.price.replace('.00', '');
     step.hidden = false; done.hidden = true; msg.textContent = ''; bookBtn.hidden = true;
     box.innerHTML = '<p class="pay-wait">Loading payment options…</p>';
+    var ap = dlg.querySelector('.pay-apple');
+    ap.querySelector('a').href = cur.applePay || '#';
+    ap.hidden = !(cur.applePay && hmApple());
     if (!dlg.open) dlg.showModal();
     if (window.gtag) gtag('event', 'begin_checkout', { value: +cur.price, currency: 'USD', items: [{ item_name: cur.title }] });
     HM.render({
