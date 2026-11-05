@@ -277,3 +277,6 @@ p, summary, .lead { text-wrap: pretty; }
 }
 .apple-pay-link:hover .apple-pay-btn { opacity: .88; }
 .pay-apple-note { font-size: 15px; line-height: 1.4; margin-top: 10px; color: rgba(45, 48, 46, .8); }
+
+.foot-note .nw { white-space: nowrap; }
+@media (max-width: 760px) { .foot-note .nw { display: block; } .foot-note .sep { display: none; } }
