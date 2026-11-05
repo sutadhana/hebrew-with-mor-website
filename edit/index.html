@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="request-key" content="01f457b3-78a0-4a37-8c2b-770f8d8a854a">
 <meta name="editor-api" content="https://site-editor.resight-it.workers.dev">
 <title>Edit your website</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
@@ -78,8 +79,12 @@ button { cursor: pointer; }
 .hbtn svg { width: 20px; height: 20px; }
 .log { flex: 1; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 9px; overscroll-behavior: contain; }
 .msg { text-wrap: pretty; max-width: 88%; padding: .55em .85em; border-radius: 14px; line-height: 1.38; white-space: pre-wrap; word-wrap: break-word; }
-.msg.bot { background: var(--beige); align-self: flex-start; border-bottom-left-radius: 4px; }
+.msg.bot { background: var(--beige); align-self: flex-start; border-bottom-left-radius: 4px; max-width: 95%; }
 .msg.me { background: var(--sage); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.handoff { display: flex; gap: 8px; flex-wrap: wrap; align-self: flex-start; }
+.handoff button { border-radius: 999px; padding: .45em 1.1em; font-size: .95em; border: 1px solid var(--sage); background: var(--sage); color: #fff; }
+.handoff button.no { background: #fff; color: var(--ink); border-color: var(--sand); }
+.handoff button:disabled { opacity: .6; }
 .msg.note { align-self: center; background: transparent; color: var(--muted); font-size: .85em; text-align: center; padding: 2px 6px; }
 .msg img { display: block; max-width: 150px; border-radius: 8px; margin-top: 6px; }
 .typing { display: inline-flex; gap: 4px; padding: 4px 0; }
@@ -235,6 +240,7 @@ window.MorAvatar = {
   var pending = ss.get('ed-pending') || {};
   var history = ss.get('ed-history') || [];
   var botName = 'Ask Mor';
+  var siteName = ss.get('ed-sitename') || '';
   var uploads = {};
   var attached = null;
   var pages = [];
@@ -271,6 +277,7 @@ window.MorAvatar = {
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Could not sign in.'); return d; }); })
       .then(function (d) {
         token = d.token; ss.set('ed-token', token);
+        siteName = d.siteName || ''; ss.set('ed-sitename', siteName);
         ss.set('ed-bot', botName);
         start();
       })
@@ -489,6 +496,7 @@ window.MorAvatar = {
       .then(function (d) {
         t.remove();
         bubble('bot', d.reply);
+        if (d.handoff) offerHandoff(d.handoff.summary);
         history.push({ role: 'user', content: fullText }, { role: 'assistant', content: d.reply });
         history = history.slice(-20);
         pending = d.pending || {};
@@ -503,6 +511,39 @@ window.MorAvatar = {
       .catch(function (err) { t.remove(); bubble('note', err.message); })
       .then(function () { busy = false; });
   });
+
+  /* ---------- Requests the editor can't do: send them to Mor ---------- */
+  var REQ_KEY = (document.querySelector('meta[name="request-key"]') || {}).content;
+  function offerHandoff(summary) {
+    var row = document.createElement('div'); row.className = 'handoff';
+    row.innerHTML = '<button type="button" class="yes">Yes, send it to Mor</button><button type="button" class="no">No, thanks</button>';
+    $('log').appendChild(row); $('log').scrollTop = $('log').scrollHeight;
+    row.querySelector('.no').onclick = function () { row.remove(); bubble('bot', 'No problem.'); };
+    row.querySelector('.yes').onclick = function () {
+      var b = this; b.disabled = true; b.textContent = 'Sending…'; row.querySelector('.no').disabled = true;
+      var chat = history.slice(-12).map(function (m) { return (m.role === 'user' ? 'Client: ' : 'Editor: ') + m.content; }).join('\n\n');
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: REQ_KEY,
+          subject: 'Change request · ' + (siteName || location.hostname),
+          from_name: (siteName || location.hostname) + ' editor',
+          website: location.origin,
+          page: label(currentPath) + ' (' + location.origin + urlOf(currentPath) + ')',
+          request: summary,
+          conversation: chat,
+          botcheck: ''
+        })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d.success) throw new Error();
+        row.remove();
+        bubble('bot', 'Sent! ✓\nMor will take care of it\nwithin 2\u00a0business\u00a0days,\nand email you when it’s done.');
+      }).catch(function () {
+        b.disabled = false; b.textContent = 'Yes, send it to Mor'; row.querySelector('.no').disabled = false;
+        bubble('note', 'That didn’t send. Please try again in a moment.');
+      });
+    };
+  }
 
   /* ---------- Voice ---------- */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition, rec = null, base = '';
@@ -654,7 +695,7 @@ window.MorAvatar = {
       show(pages.indexOf('index.html') !== -1 ? 'index.html' : pages[0]);
     }).catch(function (err) { refreshMode(); bubble('note', err.message); });
     if (!$('log').children.length) {
-      bubble('bot', 'Hi! This is ' + botName + ',\nyour AI website assistant. 👋\nHow can I help you today?\n\nTell me what you’d like to change on your website.\nYou can type, or tap the mic and just say it.\nNothing goes live until you press Publish.');
+      bubble('bot', 'Hi! This is ' + botName + ',\nyour AI website assistant. 👋\nHow can I help you today?\n\nTell me what you’d like to change\non your website.\nYou can type, or tap the mic and just say it.\nNothing goes live until you press Publish.');
     }
     refreshMode();
   }
